@@ -49,13 +49,21 @@ public class ServerMain {
 				int length = input.readInt(); // read length of incoming message
 				if (length > 0) {
 					byte[] messageBuf = new byte[length];
-					input.readFully(messageBuf, 0, messageBuf.length); // read the message
+
+					long startTime = System.currentTimeMillis();
 					
+					input.readFully(messageBuf, 0, messageBuf.length); // read the message
+
+		            long finalTime = System.currentTimeMillis();
+		            
 					String message = new String(messageBuf);
 					ServerMain.writeToFile("input.txt", message);
 					
 					System.out.println("Message received from client: " + clientAddress);
+					
 					System.out.println("Size of message: "+ message.length());
+					
+					System.out.println("Time: " + (finalTime - startTime) / 1000 + "s");
 				}
 				System.out.println("Closing connection");
 
@@ -70,20 +78,27 @@ public class ServerMain {
 		try (DatagramSocket serverSocket = new DatagramSocket(port)) {
 			while (true) {
 				System.out.println("Waiting for clients...");
+	            
+	        	byte[] messageBuf = new byte[4096];
+	            DatagramPacket messagePacket = new DatagramPacket(messageBuf, messageBuf.length);
+
+				long startTime = System.currentTimeMillis();
 				
-				byte[] buf = new byte[4096];
-	            DatagramPacket messagePacket = new DatagramPacket(buf, buf.length);
 	            serverSocket.receive(messagePacket);
+	            
+	            long finalTime = System.currentTimeMillis();
 	            
 	            InetAddress address = messagePacket.getAddress();
 	            int port = messagePacket.getPort();
-	            messagePacket = new DatagramPacket(buf, buf.length, address, port);
+	            messagePacket = new DatagramPacket(messageBuf, messageBuf.length, address, port);
 	            
 	            String message = new String(messagePacket.getData(), 0, messagePacket.getLength());
 	            
 				System.out.println("Message received from client: "  + address.getHostAddress());
 
 				System.out.println("Size of message: "+ message.length());
+				
+				System.out.println("Time: " + (finalTime - startTime) / 1000 + "s");
 			}
 		}
 

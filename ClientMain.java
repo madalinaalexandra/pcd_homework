@@ -7,7 +7,6 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
@@ -59,11 +58,6 @@ public class ClientMain {
 			String filePath = input.next();
 			
 			byte[] messageBuf = Files.readAllBytes(Paths.get(filePath));
-			byte[] lengthBuf = ByteBuffer.allocate(4).putInt(messageBuf.length).array();
-			
-
-			DatagramPacket lengthPacket = new DatagramPacket(messageBuf, messageBuf.length, new InetSocketAddress(host, port));
-			socket.send(lengthPacket);
 			
 			DatagramPacket messagePacket = new DatagramPacket(messageBuf, messageBuf.length, new InetSocketAddress(host, port));
 			socket.send(messagePacket);
