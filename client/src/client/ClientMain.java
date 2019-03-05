@@ -71,7 +71,7 @@ public class ClientMain {
 				buffer = new byte[1024];
 				System.arraycopy(messageBuf, startIndex, buffer, 0, bytesToRead);
 
-				DatagramPacket messagePacket = new DatagramPacket(messageBuf, 4096, new InetSocketAddress(host, port));
+				DatagramPacket messagePacket = new DatagramPacket(messageBuf, 1024, new InetSocketAddress(host, port));
 				socket.send(messagePacket);
 
 				if(startIndex + bytesToRead >=  messageBuf.length){
