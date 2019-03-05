@@ -65,14 +65,16 @@ public class ClientMain {
 			int count = 0;
 			int bytesToRead = 1024;
 			byte[] buffer = new byte[1024];
+			long totalTime = 0;
 
-			long startTime = System.currentTimeMillis();
 			while (startIndex + bytesToRead <= messageBuf.length) {
 				buffer = new byte[1024];
 				System.arraycopy(messageBuf, startIndex, buffer, 0, bytesToRead);
 
 				DatagramPacket messagePacket = new DatagramPacket(messageBuf, 1024, new InetSocketAddress(host, port));
+				long startTime = System.currentTimeMillis();
 				socket.send(messagePacket);
+				long endTime = System.currentTimeMillis();
 
 				if(startIndex + bytesToRead >=  messageBuf.length){
 					bytesToRead = (messageBuf.length - startIndex);
@@ -83,12 +85,12 @@ public class ClientMain {
 
 				Thread.sleep(1);
 				count++;
+				totalTime += (endTime - startTime);
 			}
 
-			long endTime = System.currentTimeMillis();
 
 			System.out.println("Bytes sent: " + messageBuf.length);
-			System.out.println("Time spent" + (endTime - startTime - count) + "ms");
+			System.out.println("Time spent" + totalTime + "ms");
 		}
 	}
 
