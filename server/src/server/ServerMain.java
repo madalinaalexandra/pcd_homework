@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -17,6 +16,8 @@ public class ServerMain {
 	public static String TCP = "TCP";
 
 	public static String UDP = "UDP";
+	
+	public static int bytesReceived = 0;
 
 	public static void main(String[] args) throws IOException {
 		if (args == null || args.length == 0) {
@@ -63,7 +64,7 @@ public class ServerMain {
 					
 					System.out.println("Size of message: "+ message.length());
 					
-					System.out.println("Time: " + (finalTime - startTime) / 1000 + "s");
+					System.out.println("Time: " + (finalTime - startTime) + "ms");
 				}
 				System.out.println("Closing connection");
 
@@ -76,29 +77,17 @@ public class ServerMain {
 
 	public static void initializeUdpServer() throws IOException{
 		try (DatagramSocket serverSocket = new DatagramSocket(port)) {
+			System.out.println("Waiting for clients...");
+			
+        	byte[] messageBuf = new byte[1024];
+        	
+            DatagramPacket messagePacket = new DatagramPacket(messageBuf, messageBuf.length);
 			while (true) {
-				System.out.println("Waiting for clients...");
-	            
-	        	byte[] messageBuf = new byte[4096];
-	            DatagramPacket messagePacket = new DatagramPacket(messageBuf, messageBuf.length);
-
-				long startTime = System.currentTimeMillis();
-				
 	            serverSocket.receive(messagePacket);
 	            
-	            long finalTime = System.currentTimeMillis();
+	            bytesReceived += messagePacket.getLength();
 	            
-	            InetAddress address = messagePacket.getAddress();
-	            int port = messagePacket.getPort();
-	            messagePacket = new DatagramPacket(messageBuf, messageBuf.length, address, port);
-	            
-	            String message = new String(messagePacket.getData(), 0, messagePacket.getLength());
-	            
-				System.out.println("Message received from client: "  + address.getHostAddress());
-
-				System.out.println("Size of message: "+ message.length());
-				
-				System.out.println("Time: " + (finalTime - startTime) / 1000 + "s");
+				System.out.println("Size of message: "+ ServerMain.bytesReceived);
 			}
 		}
 
